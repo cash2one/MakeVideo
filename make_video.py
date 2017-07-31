@@ -1,6 +1,7 @@
 """
 Script to create the movie
 """
+import random 
 import os
 import shutil
 import sys
@@ -69,7 +70,7 @@ list_keywords = ', '.join(keywords)
 txt_nowrap = article.text
 description =  txt_nowrap[:500].replace('\n\n', '\n')
 print('Text >> ' + description + "...\n")
-txt = '\n'.join(textwrap.wrap(txt_nowrap, 70)).replace("  ", " ")
+txt = '\n'.join(textwrap.wrap(txt_nowrap, 60)).replace("  ", " ")
 
 # Add blanks
 txt = 10*"\n" + txt + 10*"\n"
@@ -87,10 +88,10 @@ except:
 
 # CREATE THE TEXT IMAGE
 clip_txt = TextClip(txt,color='white', bg_color='black' ,align='Center', fontsize=20, font='Droid Sans', method='label')
-title_txt = TextClip(title,color='white', bg_color='red', align='Center', fontsize=32, font='Droid Sans', method='label').margin(top=5, opacity=0)
+title_txt = TextClip(title,color='white', bg_color='red', align='Center', fontsize=40, font='Droid Sans', method='label').margin(top=5, opacity=0)
 # SCROLL THE TEXT IMAGE BY CROPPING A MOVING AREA
 txt_speed = 8
-fl = lambda gf,t : gf(t)[int(txt_speed*t):int(txt_speed*t)+int(H*92/100),:]
+fl = lambda gf,t : gf(t)[int(txt_speed*t):int(txt_speed*t)+int(H*90/100),:]
 moving_txt = clip_txt.fl(fl, apply_to=['mask'])
 
 
@@ -101,7 +102,13 @@ background_darkened = background_image.fl_image(lambda pic: (0.6*pic).astype('in
 
 #clips.append(background_image)
 print('Number of images >> ' + str(len(list_images)))
+
 list_images_new = []
+files_folder_background = os.listdir('background')
+for i in range(10):
+    random_number = random.randint(0, len(files_folder_background))
+    list_images_new.append('background/' + files_folder_background[random_number-1])
+
 list_images_new.append('background.jpg')
 for i in range (len(list_images)):
     filepath = 'tmp/' + list_images[i]
@@ -112,7 +119,7 @@ for i in range (len(list_images)):
         width = int(im.size[0])
     except:
         pass
-    if size > 15000 or width > 400:
+    if size > 25000 or width > 600:
         list_images_new.append(filepath)
 
 timing_duration = int(audio_length/len(list_images_new))
