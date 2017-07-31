@@ -67,7 +67,7 @@ keywords = article.keywords
 list_keywords = ', '.join(keywords)
 
 txt_nowrap = article.text
-description =  txt_nowrap[:500]
+description =  txt_nowrap[:500].replace('\n\n', '\n')
 print('Text >> ' + description + "...\n")
 txt = '\n'.join(textwrap.wrap(txt_nowrap, 70)).replace("  ", " ")
 
@@ -87,10 +87,10 @@ except:
 
 # CREATE THE TEXT IMAGE
 clip_txt = TextClip(txt,color='white', bg_color='black' ,align='Center', fontsize=20, font='Droid Sans', method='label')
-title_txt = TextClip(title,color='white', bg_color='red', align='Center', fontsize=32, font='Droid Sans', method='label')
+title_txt = TextClip(title,color='white', bg_color='red', align='Center', fontsize=32, font='Droid Sans', method='label').margin(top=5, opacity=0)
 # SCROLL THE TEXT IMAGE BY CROPPING A MOVING AREA
 txt_speed = 8
-fl = lambda gf,t : gf(t)[int(txt_speed*t):int(txt_speed*t)+int(H),:]
+fl = lambda gf,t : gf(t)[int(txt_speed*t):int(txt_speed*t)+int(H*92/100),:]
 moving_txt = clip_txt.fl(fl, apply_to=['mask'])
 
 
@@ -115,26 +115,30 @@ for i in range (len(list_images)):
     if size > 15000 or width > 400:
         list_images_new.append(filepath)
 
-
 timing_duration = int(audio_length/len(list_images_new))
 print('Timing Duration >> ' + str(timing_duration))
 print('New number of images >> ' + str(len(list_images_new)))
 
 clips = []
 for j in range (len(list_images_new)):
-    slide = ImageClip(list_images_new[j]).set_duration(timing_duration).set_start(timing_duration * j).set_pos(lambda t: ('center', 50+t) ).crossfadein(.3)
+    #slide = ImageClip(list_images_new[j]).set_duration(timing_duration).set_start(timing_duration * j).set_position(lambda t: ('center', 50+t) ).crossfadein(.3)
+    slide = ImageClip(list_images_new[j]).set_duration(timing_duration).set_start(timing_duration * j).set_position('center').crossfadein(.3)
     clips.append(slide)
 
-clips.append(moving_txt.set_pos(('center', 'bottom')))
-clips.append(title_txt.set_pos(('center','top')))
+clips.append(moving_txt.set_position(('center','bottom')).margin(bottom=15, opacity=0))
+clips.append(title_txt.set_position(('center','top')))
+
 videoclip = CompositeVideoClip(clips, moviesize)
 videoclip.set_duration(audio_length).write_videofile('videos/' + title + ".avi", fps=5, codec='libx264', 
         audio='mp3/' + title + '.mp3', audio_codec='aac', temp_audiofile='mp3/' + title +'.mp3', remove_temp=True)
 
 print('Title >> ' + title)
 print('Keywords >> ' + list_keywords)
-description_to_save = "TITLE = " + title + '\n\n' + '*' * 70 + '\n\nDESCRIPTION = ' + description + '\n\n' + '*' * 70  + '\n\nKEYWORDS =  ' + list_keywords + '\n'
+description_to_save = "URL = " + url + '\n\n' + '*' * 70 + "\n\nTITLE = " + title + '\n\n' + '*' * 70 + '\n\nDESCRIPTION = ' + \
+                        description + '\n\n' + '*' * 70  + '\n\nKEYWORDS =  ' + list_keywords + '\n\n' + '*' * 70 + '\n\nTIMING for ADS = ' + \
+                        "0:10, 0:20, 0:30, 0:40, 0:50, 1:00"
 
+# SAVE Url, Title, Description, Keywords to file TXT
 file = open("videos/" + title + ".txt","w") 
 file.write(description_to_save) 
 file.close() 
