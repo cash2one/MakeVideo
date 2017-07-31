@@ -4,7 +4,7 @@ Script to create the movie
 import os
 import shutil
 import sys
-import datetime
+#import datetime
 from PIL import Image
 from gtts import gTTS
 from mutagen.mp3 import MP3
@@ -23,9 +23,12 @@ moviesize = W, H
 lang_choice = 'en-us'
 if len(sys.argv) > 1:
     from newspaper import Article
-    url = sys.argv[1]
     try:
-        lang_choice = sys.argv[2]
+        lang_choice = sys.argv[1]
+    except:
+        pass
+    try:
+        url = sys.argv[2]
     except:
         pass
     print('Language >> ' + lang_choice)
@@ -82,8 +85,8 @@ except:
     pass
 
 # CREATE THE TEXT IMAGE
-clip_txt = TextClip(txt,color='white', align='West', fontsize=20, font='Droid Sans', method='label')
-
+clip_txt = TextClip(txt,color='white', bg_color='black' ,align='Center', fontsize=20, font='Droid Sans', method='label')
+title_txt = TextClip(title,color='white', bg_color='red', align='Center', fontsize=32, font='Droid Sans', method='label')
 # SCROLL THE TEXT IMAGE BY CROPPING A MOVING AREA
 txt_speed = 8
 fl = lambda gf,t : gf(t)[int(txt_speed*t):int(txt_speed*t)+int(H),:]
@@ -121,12 +124,11 @@ for j in range (len(list_images_new)):
     slide = ImageClip(list_images_new[j]).set_duration(timing_duration).set_start(timing_duration * j).set_pos(lambda t: ('center', 50+t) ).crossfadein(.3)
     clips.append(slide)
 
-clips.append(moving_txt.set_pos(('center','bottom')))
-
+clips.append(moving_txt.set_pos(('center', 'bottom')))
+clips.append(title_txt.set_pos(('center','top')))
 videoclip = CompositeVideoClip(clips, moviesize)
 videoclip.set_duration(audio_length).write_videofile(title + ' ___ ' + list_keywords + ".avi", fps=5, codec='libx264', 
-        audio=title + ".mp3", audio_codec='aac', temp_audiofile=title+'.mp3', remove_temp=True
-)
+        audio=title + ".mp3", audio_codec='aac', temp_audiofile=title+'.mp3', remove_temp=True)
 
 print('Title >> ' + title)
 print('Keywords >> ' + list_keywords)
