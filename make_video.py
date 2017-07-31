@@ -28,7 +28,7 @@ if len(sys.argv) > 1:
         lang_choice = sys.argv[2]
     except:
         pass
-    print('Language: ' + lang_choice)
+    print('Language >> ' + lang_choice)
     article = Article(url)
 else:
     import newspaper
@@ -60,10 +60,12 @@ except:
     print('Error NLP')
     pass
 keywords = article.keywords
+list_keywords = ', '.join(keywords)
 
 txt_nowrap = article.text
-print('Text: ' + txt_nowrap[:100] + "...")
-txt = '\n'.join(textwrap.wrap(txt_nowrap, 55))
+description =  txt_nowrap[:100]
+print('Text >> ' + description + "...\n")
+txt = '\n'.join(textwrap.wrap(txt_nowrap, 70))
 
 # Add blanks
 txt = 10*"\n" + txt + 10*"\n"
@@ -80,7 +82,7 @@ except:
     pass
 
 # CREATE THE TEXT IMAGE
-clip_txt = TextClip(txt,color='white', align='West', fontsize=20, font='NotoSerifTamil-Bold', method='label')
+clip_txt = TextClip(txt,color='white', align='West', fontsize=20, font='Droid Sans', method='label')
 
 # SCROLL THE TEXT IMAGE BY CROPPING A MOVING AREA
 txt_speed = 8
@@ -94,7 +96,7 @@ background_darkened = background_image.fl_image(lambda pic: (0.6*pic).astype('in
 
 
 #clips.append(background_image)
-print('Number of images:' + str(len(list_images)))
+print('Number of images >> ' + str(len(list_images)))
 list_images_new = []
 list_images_new.append('background.jpg')
 for i in range (len(list_images)):
@@ -102,7 +104,7 @@ for i in range (len(list_images)):
     size = int(os.stat(filepath).st_size)
     width = 0
     try:
-        im=Image.open(filepath)
+        im = Image.open(filepath)
         width = int(im.size[0])
     except:
         pass
@@ -111,8 +113,8 @@ for i in range (len(list_images)):
 
 
 timing_duration = int(audio_length/len(list_images_new))
-print('Timing Duration:' + str(timing_duration))
-print('New number of images:' + str(len(list_images_new)))
+print('Timing Duration >> ' + str(timing_duration))
+print('New number of images >> ' + str(len(list_images_new)))
 
 clips = []
 for j in range (len(list_images_new)):
@@ -122,12 +124,16 @@ for j in range (len(list_images_new)):
 clips.append(moving_txt.set_pos(('center','bottom')))
 
 videoclip = CompositeVideoClip(clips, moviesize)
-videoclip.set_duration(audio_length).write_videofile(title + '_' + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ".avi", 
-                        fps=5, codec='libx264', audio="txt.mp3", audio_codec='aac', temp_audiofile='txt.mp3', remove_temp=True
+videoclip.set_duration(audio_length).write_videofile(title + ' ___ ' + list_keywords + ".avi", fps=5, codec='libx264', 
+        audio=title + ".mp3", audio_codec='aac', temp_audiofile=title+'.mp3', remove_temp=True
 )
 
 print('Title >> ' + title)
-print('Keywords >> ' + ', '.join(keywords))
+print('Keywords >> ' + list_keywords)
+
+
+#UPLOAD
+#os.system('python filename.py')
 
 # DELETE TEMPORY FILES IMAGES
 folder = 'tmp'
