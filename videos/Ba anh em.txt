@@ -1,0 +1,19 @@
+TITLE = Ba anh em
+
+**********************************************************************
+
+DESCRIPTION = Ba anh em
+
+Một người có ba con trai, cả cơ nghiệp có một cái nhà. Người con nào cũng muốn sau này, khi bố mất, nhà sẽ về mình. Ông bố thì con nào cũng quí, thành ra rất phân vân, không biết tính sao cho các con vừa lòng. Bán nhà đi thì có tiền chia cho chúng, nhưng là của hương hỏa nên ông không muốn bán. Sau ông nghĩ được một kế, bảo các con:
+
+
+
+- Chúng mày hãy đi chu du thiên hạ, thử gan thử sức một phen. Mỗi đứa học lấy một nghề. Đứa nào giỏi nhất, bố cho cái nhà.
+
+
+
+Ba người con lấy làm thíc
+
+**********************************************************************
+
+KEYWORDS =  người, ba, em, được, cho, bố, vừa, một, nhà, anh, nào, làm

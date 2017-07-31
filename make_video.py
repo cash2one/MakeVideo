@@ -62,24 +62,25 @@ try:
 except:
     print('Error NLP')
     pass
+
 keywords = article.keywords
 list_keywords = ', '.join(keywords)
 
 txt_nowrap = article.text
-description =  txt_nowrap[:100]
+description =  txt_nowrap[:500]
 print('Text >> ' + description + "...\n")
-txt = '\n'.join(textwrap.wrap(txt_nowrap, 70))
+txt = '\n'.join(textwrap.wrap(txt_nowrap, 70)).replace("  ", " ")
 
 # Add blanks
 txt = 10*"\n" + txt + 10*"\n"
 
-if os.path.exists(title + ".mp3") is False:
+if os.path.exists('mp3/' + title + '.mp3') is False:
     if txt_nowrap != '':
         tts = gTTS(text=txt_nowrap, lang=lang_choice)
-        tts.save(title + ".mp3")
+        tts.save('mp3/' + title + ".mp3")
 
 try:
-    audio = MP3(title + ".mp3")
+    audio = MP3('mp3/' +title + ".mp3")
     audio_length = int(audio.info.length)
 except:
     pass
@@ -127,12 +128,16 @@ for j in range (len(list_images_new)):
 clips.append(moving_txt.set_pos(('center', 'bottom')))
 clips.append(title_txt.set_pos(('center','top')))
 videoclip = CompositeVideoClip(clips, moviesize)
-videoclip.set_duration(audio_length).write_videofile(title + ' ___ ' + list_keywords + ".avi", fps=5, codec='libx264', 
-        audio=title + ".mp3", audio_codec='aac', temp_audiofile=title+'.mp3', remove_temp=True)
+videoclip.set_duration(audio_length).write_videofile('videos/' + title + ".avi", fps=5, codec='libx264', 
+        audio='mp3/' + title + '.mp3', audio_codec='aac', temp_audiofile='mp3/' + title +'.mp3', remove_temp=True)
 
 print('Title >> ' + title)
 print('Keywords >> ' + list_keywords)
+description_to_save = "TITLE = " + title + '\n\n' + '*' * 70 + '\n\nDESCRIPTION = ' + description + '\n\n' + '*' * 70  + '\n\nKEYWORDS =  ' + list_keywords + '\n'
 
+file = open("videos/" + title + ".txt","w") 
+file.write(description_to_save) 
+file.close() 
 
 #UPLOAD
 #os.system('python filename.py')
