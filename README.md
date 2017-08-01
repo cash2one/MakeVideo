@@ -1,2 +1,2 @@
 # MakeVideo
-Phải có thư mục: mp3, videos, tmp đặt ở ngoài.
+Phải có thư mục: mp3, videos, tmp , background đặt ở ngoài.

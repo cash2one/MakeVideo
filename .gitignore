@@ -1,2 +1,5 @@
 *.avi
 *.mp3
+videos/
+mp3/
+tmp/
