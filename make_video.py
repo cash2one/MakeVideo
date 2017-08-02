@@ -9,7 +9,7 @@ import sys
 from PIL import Image
 from gtts import gTTS
 from mutagen.mp3 import MP3
-import urllib.request
+#import urllib.request
 from moviepy.editor import *
 import textwrap
 from moviepy.video.tools.drawing import color_gradient
@@ -37,18 +37,18 @@ def create_movie(lang_choice, url, directory):
     top_image = article.top_image
     images = article.images
 
-    list_images = []
-    j = 0
-    for i in images:
-        try:
-            j += 1
-            filename = str(j) + '.jpg'
-            urllib.request.urlretrieve(i, 'tmp/' + filename)
-            list_images.append(filename)
-        except:
-            if j > 0:
-                j =- 1
-            continue
+    # list_images = []
+    # j = 0
+    # for i in images:
+    #     try:
+    #         j += 1
+    #         filename = str(j) + '.jpg'
+    #         urllib.request.urlretrieve(i, 'tmp/' + filename)
+    #         list_images.append(filename)
+    #     except:
+    #         if j > 0:
+    #             j =- 1
+    #         continue
 
     try:
         article.nlp()
@@ -91,7 +91,7 @@ def create_movie(lang_choice, url, directory):
     background_image = ImageClip('background.jpg')
     background_darkened = background_image.fl_image(lambda pic: (0.6*pic).astype('int16'))
 
-    print('Number of images >> ' + str(len(list_images)))
+    #print('Number of images >> ' + str(len(list_images)))
 
     list_images_new = []
     files_folder_background = os.listdir('background')
@@ -120,7 +120,7 @@ def create_movie(lang_choice, url, directory):
     clips = []
     for j in range (len(list_images_new)):
         print(list_images_new[j])
-        slide = ImageClip(list_images_new[j]).set_duration(timing_duration).set_start(timing_duration * j).set_position('center').crossfadein(.3)
+        slide = ImageClip(list_images_new[j]).set_duration(timing_duration).set_start(timing_duration * j).set_position('center').crossfadein(.5)
         clips.append(slide)
 
     clips.append(moving_txt.set_position(('center','bottom')).margin(bottom=15, opacity=0))
