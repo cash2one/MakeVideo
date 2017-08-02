@@ -18,7 +18,12 @@ from skimage import transform as tf
 from newspaper import Article
 
 
-def create_movie(lang_choice, url):
+def create_movie(lang_choice, url, directory):
+
+    path_directory = 'videos/' + directory
+    if not os.path.exists(path_directory):
+        os.makedirs(path_directory)
+    
     # RESOLUTION
     W = 1280
     H = 720
@@ -90,38 +95,40 @@ def create_movie(lang_choice, url):
 
     list_images_new = []
     files_folder_background = os.listdir('background')
-    for i in range(10):
+    for i in range(15):
         random_number = random.randint(0, len(files_folder_background))
         list_images_new.append('background/' + files_folder_background[random_number-1])
 
     list_images_new.append('background.jpg')
-    for i in range (len(list_images)):
-        filepath = 'tmp/' + list_images[i]
-        size = int(os.stat(filepath).st_size)
-        width = 0
-        try:
-            im = Image.open(filepath)
-            width = int(im.size[0])
-        except:
-            pass
-        if size > 25000 and width > 600:
-            list_images_new.append(filepath)
+    # for i in range (len(list_images)):
+    #     filepath = 'tmp/' + list_images[i]
+    #     size = int(os.stat(filepath).st_size)
+    #     width = 0
+    #     try:
+    #         im = Image.open(filepath)
+    #         width = int(im.size[0])
+    #     except:
+    #         pass
+    #     if size > 25000 and width > 600:
+    #         list_images_new.append(filepath)
 
     timing_duration = int(audio_length/len(list_images_new))
     print('Timing Duration >> ' + str(timing_duration))
     print('New number of images >> ' + str(len(list_images_new)))
 
+    logo = ImageClip('logo.png').set_position(('left','top'))
     clips = []
     for j in range (len(list_images_new)):
-        #slide = ImageClip(list_images_new[j]).set_duration(timing_duration).set_start(timing_duration * j).set_position(lambda t: ('center', 50+t) ).crossfadein(.3)
+        print(list_images_new[j])
         slide = ImageClip(list_images_new[j]).set_duration(timing_duration).set_start(timing_duration * j).set_position('center').crossfadein(.3)
         clips.append(slide)
 
     clips.append(moving_txt.set_position(('center','bottom')).margin(bottom=15, opacity=0))
     clips.append(title_txt.set_position(('center','top')))
-
+    clips.append(logo)
     videoclip = CompositeVideoClip(clips, moviesize)
-    videoclip.set_duration(audio_length).write_videofile('videos/' + title + ".avi", fps=5, codec='libx264', 
+
+    videoclip.set_duration(audio_length).write_videofile(path_directory + '/' + title + ".avi", fps=5, codec='libx264', 
             audio='mp3/' + title + '.mp3', audio_codec='aac', temp_audiofile='mp3/' + title +'.mp3', remove_temp=True)
 
     print('Title >> ' + title)
@@ -131,7 +138,7 @@ def create_movie(lang_choice, url):
                             "0:10, 0:20, 0:30, 0:40, 0:50, 1:00"
 
     # SAVE Url, Title, Description, Keywords to file TXT
-    file = open("videos/" + title + ".txt","w") 
+    file = open(path_directory + '/' + title + ".txt","w") 
     file.write(description_to_save) 
     file.close() 
 
@@ -153,33 +160,37 @@ def create_movie(lang_choice, url):
 if __name__ == "__main__":
     # lang_choice = 'vi' en-us
     # python make_video vi ALL <link for all> == download all links in URL
-    # python make_video vi LIST == download all links in file list_download.txt
-    # python make_video vi LINK == download ONLY 1 link in argv3
+    # python make_video vi LIST <filename.txt> == download all links in file list_download.txt
+    # python make_video vi LINK <link>== download ONLY 1 link in argv3
     if len(sys.argv) > 1:    
         lang_choice = sys.argv[1]
         print('Language >> ' + lang_choice)
         arg_type = sys.argv[2]
         try:
-            url = sys.argv[3]
+            directory = sys.argv[3]
         except:
             pass
 
         if arg_type == 'ALL':
             import newspaper
             paper = newspaper.build(url, memoize_articles=False)
+            directory = 'ALL'
             for article in paper.articles:
                 print(article.url)
-                create_movie(lang_choice, article.url)
+                try:
+                    create_movie(lang_choice, article.url.strip(), directory)
+                except:
+                    continue
         elif arg_type == 'LIST':
-            file = open('list_download.txt', 'r') 
+            file = open(directory + '.txt', 'r')
             list_download = file.readlines()
             file.close()
             for i in range(len(list_download)):
                 print(list_download[i])
                 try:
-                    create_movie(lang_choice, list_download[i])
+                    create_movie(lang_choice, list_download[i].strip(), directory)
                 except:
                     continue
         elif arg_type == 'LINK':
-                create_movie(lang_choice, url)
-                
+            url = directory
+            create_movie(lang_choice, url.strip(), directory)
