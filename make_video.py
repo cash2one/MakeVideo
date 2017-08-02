@@ -162,6 +162,7 @@ if __name__ == "__main__":
     # python make_video vi ALL <link for all> == download all links in URL
     # python make_video vi LIST <filename.txt> == download all links in file list_download.txt
     # python make_video vi LINK <link>== download ONLY 1 link in argv3
+    # python make_video.py en-us LIST ENG-Greek_Mythology
     if len(sys.argv) > 1:    
         lang_choice = sys.argv[1]
         print('Language >> ' + lang_choice)
