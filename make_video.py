@@ -116,7 +116,7 @@ def create_movie(lang_choice, url, directory):
     print('Timing Duration >> ' + str(timing_duration))
     print('New number of images >> ' + str(len(list_images_new)))
 
-    logo = ImageClip('logo.png').set_position(('left','top'))
+    logo = ImageClip('logo.png').set_position(('left','center'))
     clips = []
     for j in range (len(list_images_new)):
         print(list_images_new[j])
