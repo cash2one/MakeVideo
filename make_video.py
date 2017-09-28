@@ -1,6 +1,7 @@
 """
 Script to create the movie
 """
+from subprocess import call
 import random 
 import os
 import shutil
@@ -37,19 +38,6 @@ def create_movie(lang_choice, url, directory):
     top_image = article.top_image
     images = article.images
 
-    # list_images = []
-    # j = 0
-    # for i in images:
-    #     try:
-    #         j += 1
-    #         filename = str(j) + '.jpg'
-    #         urllib.request.urlretrieve(i, 'tmp/' + filename)
-    #         list_images.append(filename)
-    #     except:
-    #         if j > 0:
-    #             j =- 1
-    #         continue
-
     try:
         article.nlp()
     except:
@@ -66,10 +54,14 @@ def create_movie(lang_choice, url, directory):
 
     # Add blanks
     txt = 10*"\n" + txt + 10*"\n"
-
+    print("Title >> " + title)
     if os.path.exists('mp3/' + title + '.mp3') is False:
         if txt_nowrap != '':
-            tts = gTTS(text=txt_nowrap, lang=lang_choice)
+            if lang_choice[:2] == "en":
+                speed = True
+            else:
+                speed = False
+            tts = gTTS(text=txt_nowrap, lang=lang_choice, slow=speed)
             tts.save('mp3/' + title + ".mp3")
 
     try:
@@ -100,17 +92,6 @@ def create_movie(lang_choice, url, directory):
         list_images_new.append('background/' + files_folder_background[random_number-1])
 
     list_images_new.append('background.jpg')
-    # for i in range (len(list_images)):
-    #     filepath = 'tmp/' + list_images[i]
-    #     size = int(os.stat(filepath).st_size)
-    #     width = 0
-    #     try:
-    #         im = Image.open(filepath)
-    #         width = int(im.size[0])
-    #     except:
-    #         pass
-    #     if size > 25000 and width > 600:
-    #         list_images_new.append(filepath)
 
     timing_duration = int(audio_length/len(list_images_new))
     print('Timing Duration >> ' + str(timing_duration))
@@ -128,7 +109,9 @@ def create_movie(lang_choice, url, directory):
     clips.append(logo)
     videoclip = CompositeVideoClip(clips, moviesize)
 
-    videoclip.set_duration(audio_length).write_videofile(path_directory + '/' + title + ".avi", fps=5, codec='libx264', 
+
+    video_file_save = path_directory + '/' + title + ".avi"
+    videoclip.set_duration(audio_length).write_videofile(video_file_save, fps=5, codec='libx264', 
             audio='mp3/' + title + '.mp3', audio_codec='aac', temp_audiofile='mp3/' + title +'.mp3', remove_temp=True)
 
     print('Title >> ' + title)
@@ -141,6 +124,9 @@ def create_movie(lang_choice, url, directory):
     file = open(path_directory + '/' + title + ".txt","w") 
     file.write(description_to_save) 
     file.close() 
+
+    # CREATE SUBTITLES .SRT
+    call(["autosub", "-D", lang_choice[:2], video_file_save])
 
     #UPLOAD
     #os.system('python filename.py')
@@ -178,20 +164,20 @@ if __name__ == "__main__":
             directory = 'ALL'
             for article in paper.articles:
                 print(article.url)
-                try:
-                    create_movie(lang_choice, article.url.strip(), directory)
-                except:
-                    continue
+                #try:
+                create_movie(lang_choice, article.url.strip(), directory)
+                #except:
+                #    continue
         elif arg_type == 'LIST':
             file = open(directory + '.txt', 'r')
             list_download = file.readlines()
             file.close()
             for i in range(len(list_download)):
                 print(list_download[i])
-                try:
-                    create_movie(lang_choice, list_download[i].strip(), directory)
-                except:
-                    continue
+                #try:
+                create_movie(lang_choice, list_download[i].strip(), directory)
+                #except:
+                #    continue
         elif arg_type == 'LINK':
             url = directory
             create_movie(lang_choice, url.strip(), directory)
