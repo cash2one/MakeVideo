@@ -57,11 +57,11 @@ def create_movie(lang_choice, url, directory):
     print("Title >> " + title)
     if os.path.exists('mp3/' + title + '.mp3') is False:
         if txt_nowrap != '':
-            if lang_choice[:2] == "en":
-                speed = True
-            else:
-                speed = False
-            tts = gTTS(text=txt_nowrap, lang=lang_choice, slow=speed)
+            speed_slow = False
+            #if lang_choice[:2] == "en":
+            #    speed_slow = True
+
+            tts = gTTS(text=txt_nowrap, lang=lang_choice, slow=speed_slow)
             tts.save('mp3/' + title + ".mp3")
 
     try:
@@ -75,7 +75,7 @@ def create_movie(lang_choice, url, directory):
     title_txt = TextClip(title,color='white', bg_color='red', align='Center', fontsize=40, font='Droid Sans', method='label').margin(top=5, opacity=0)
     
     # SCROLL THE TEXT IMAGE BY CROPPING A MOVING AREA
-    txt_speed = 8
+    txt_speed = 4
     fl = lambda gf,t : gf(t)[int(txt_speed*t):int(txt_speed*t)+int(H*90/100),:]
     moving_txt = clip_txt.fl(fl, apply_to=['mask'])
 
@@ -104,7 +104,7 @@ def create_movie(lang_choice, url, directory):
         slide = ImageClip(list_images_new[j]).set_duration(timing_duration).set_start(timing_duration * j).set_position('center').crossfadein(.5)
         clips.append(slide)
 
-    clips.append(moving_txt.set_position(('center','bottom')).margin(bottom=15, opacity=0))
+    clips.append(moving_txt.set_position(('center','bottom')).margin(bottom=45, opacity=0))
     clips.append(title_txt.set_position(('center','top')))
     clips.append(logo)
     videoclip = CompositeVideoClip(clips, moviesize)
@@ -126,7 +126,7 @@ def create_movie(lang_choice, url, directory):
     file.close() 
 
     # CREATE SUBTITLES .SRT
-    call(["autosub", "-D", lang_choice[:2], video_file_save])
+    # call(["autosub", "-D", lang_choice[:2], video_file_save])
 
     #UPLOAD
     #os.system('python filename.py')
